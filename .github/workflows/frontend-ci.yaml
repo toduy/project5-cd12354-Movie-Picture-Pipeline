@@ -1,4 +1,4 @@
-name: dtq-movie-picture-ci
+name: Frontend Continuous Integration
 
 on:
   pull_request:
@@ -55,4 +55,4 @@ jobs:
 
       - name: Build Docker image
         working-directory: starter/frontend
-        run: docker build -t movie-picture-frontend:latest .
+        run: docker build -t mp-frontend:latest .
