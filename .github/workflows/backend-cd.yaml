@@ -1,0 +1,90 @@
+name: Backend Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE_REPOSITORY: mp-backend
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          pipenv install --dev
+        working-directory: starter/backend
+
+      - name: Run linter
+        run: pipenv run lint
+        working-directory: starter/backend
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          pipenv install
+        working-directory: starter/backend
+
+      - name: Run test
+        run: pipenv run test
+        working-directory: starter/backend
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+      - name: Build backend docker
+        run: docker build ./starter/backend -t ${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push to Amazon ECR
+        run: |
+          docker tag ${{ env.IMAGE_REPOSITORY }}:${{ github.sha }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: push-to-ecr
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4.2.2
+  #     - name: Deploy to EKS
+  #       run: |
+  #         aws eks update-kubeconfig --name my-eks-cluster --region us-east-2
+  #         kubectl apply -f backend/k8s/deployment.yaml
