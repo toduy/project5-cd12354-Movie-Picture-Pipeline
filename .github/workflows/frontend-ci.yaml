@@ -55,4 +55,4 @@ jobs:
 
       - name: Build Docker image
         working-directory: starter/frontend
-        run: docker build -t mp-frontend:latest .
+        run: docker build -t mp-frontend:${{ github.sha }} .

@@ -9,9 +9,7 @@ on:
 env:
   REACT_APP_MOVIE_API_URL: http://localhost:5000
   IMAGE_REPOSITORY: mp-frontend
-# permissions:
-#   id-token: write # Required for requesting the JWT
-#   contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -59,7 +57,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
       - name: Build frontend docker
-        run: docker build ./starter/frontend --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} -t ${{ env.IMAGE_REPOSITORY }}:latest
+        run: docker build ./starter/frontend --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} -t ${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -74,8 +72,8 @@ jobs:
 
       - name: Push to Amazon ECR
         run: |
-          docker tag ${{ env.IMAGE_REPOSITORY }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:latest
+          docker tag ${{ env.IMAGE_REPOSITORY }}:${{ github.sha }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
 
   # deploy:
   #   runs-on: ubuntu-latest
