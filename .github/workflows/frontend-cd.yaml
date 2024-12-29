@@ -87,8 +87,6 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: us-east-2
           cluster: ${{ secrets.CLUSTER_NAME }}
-        with:
-          args: rollout restart deployment/willanyoneeverreadthis
       - name: Deploy to EKS
         run: |
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
