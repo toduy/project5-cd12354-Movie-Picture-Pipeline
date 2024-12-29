@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pipenv
-          pipenv install
+          pipenv install --dev
         working-directory: starter/backend
 
       - name: Run linter
