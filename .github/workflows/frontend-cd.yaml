@@ -93,10 +93,3 @@ jobs:
           kustomize edit set image frontend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
           kustomize build | kubectl apply -f -
         working-directory: starter/frontend/k8s
-      # - name: Trigger app deployment
-      #   uses: statsig-io/kubectl-via-eksctl@main
-      #   env:
-      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     region: us-east-2
-      #     cluster: ${{ secrets.CLUSTER_NAME }}
