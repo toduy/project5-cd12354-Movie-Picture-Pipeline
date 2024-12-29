@@ -79,7 +79,7 @@ jobs:
 
   push-to-ecr:
     runs-on: ubuntu-latest
-    needs: login-to-ecr
+    needs: [build, login-to-ecr]
     steps:
       - name: Push to Amazon ECR
         run: |
