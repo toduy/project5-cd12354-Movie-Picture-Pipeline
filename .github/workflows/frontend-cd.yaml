@@ -9,7 +9,9 @@ on:
 env:
   REACT_APP_MOVIE_API_URL: http://localhost:5000
   IMAGE_REPOSITORY: mp-frontend
-
+permissions:
+  id-token: write # Required for requesting the JWT
+  contents: read
 jobs:
   lint:
     runs-on: ubuntu-latest
