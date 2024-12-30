@@ -20,6 +20,8 @@ jobs:
         uses: actions/setup-node@v4.1.0
         with:
           node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: starter/frontend/package-lock.json
 
       - name: Install node modules
         run: npm ci
@@ -39,6 +41,8 @@ jobs:
         uses: actions/setup-node@v4.1.0
         with:
           node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: starter/frontend/package-lock.json
 
       - name: Install node modules
         run: npm ci
